@@ -1,0 +1,12 @@
+version: '2'
+services:
+  vscode:
+    build: .
+    image: "sivuch/vscode"
+    container_name: "vscode"
+    privileged: true
+    ports:
+      - "10022:22"
+    volumes:
+      - "./dev/vscode:/home/dev/.vscode"
+      - "./dev/work:/home/dev/work"

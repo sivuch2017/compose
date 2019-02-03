@@ -1,0 +1,4 @@
+vscode/dev/vscode/*
+!.gitkeep
+vscode/dev/work/*
+!.gitkeep
