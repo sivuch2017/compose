@@ -16,12 +16,12 @@ services:
       RAILS_RELATIVE_URL_ROOT: /redmine
     depends_on:
       - mysql
-      - memcached
     volumes:
       - ./redmine/files:/usr/src/redmine/files
       - ./redmine/log:/usr/src/redmine/log
       - ./redmine/plugins:/usr/src/redmine/plugins
       - ./redmine/public/themes:/usr/src/redmine/public/themes
+      - ./redmine/vendor/cache:/usr/src/redmine/vendor/cache
       - ./redmine/config.ru:/usr/src/redmine/config.ru
   mysql:
     image: mysql:5.7
@@ -33,17 +33,9 @@ services:
       MYSQL_DATABASE: redmine
       MYSQL_USER: redmine
       MYSQL_PASSWORD: redmine
-#    ports:
-#      - 3306:3306
     volumes:
       - mysql-data:/var/lib/mysql
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
-  memcached:
-    image: memcached
-    container_name: memcached
-    restart: always
-#    ports:
-#      - 11211:11211
 volumes:
   mysql-data:
     name: mysql-redmine

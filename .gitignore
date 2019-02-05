@@ -10,4 +10,5 @@ redmine/redmine/files/*
 !.gitkeep
 redmine/redmine/plugins/*
 !.gitkeep
-
+redmine/redmine/vendor/cache/*
+!.gitkeep
