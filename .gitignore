@@ -2,3 +2,13 @@ vscode/dev/vscode/*
 !.gitkeep
 vscode/dev/work/*
 !.gitkeep
+redmine/redmine/public/themes/*
+!.gitkeep
+redmine/redmine/log/*
+!.gitkeep
+redmine/redmine/files/*
+!.gitkeep
+redmine/redmine/plugins/*
+!.gitkeep
+redmine/redmine/vendor/cache/*
+!.gitkeep
