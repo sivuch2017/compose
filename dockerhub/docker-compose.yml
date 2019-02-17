@@ -1,0 +1,26 @@
+version: '3.5'
+services:
+  dockerhub:
+    image: registry:2
+    restart: always
+    ports:
+      - 443:443
+    environment:
+      REGISTRY_HTTP_ADDR: 0.0.0.0:443
+      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/dockerhub.crt
+      REGISTRY_HTTP_TLS_KEY: /certs/dockerhub.key
+      REGISTRY_STORAGE_DELETE_ENABLED: 'true'
+    volumes:
+      - ./volume/certs:/certs
+      - ./volume/registry:/var/lib/registry
+  frontend:
+    image: konradkleine/docker-registry-frontend:v2
+    restart: always
+    ports:
+      - 80:80
+    environment:
+      ENV_DOCKER_REGISTRY_HOST: dockerhub
+      ENV_DOCKER_REGISTRY_PORT: 443
+      ENV_DOCKER_REGISTRY_USE_SSL: 1
+    depends_on:
+      - dockerhub
