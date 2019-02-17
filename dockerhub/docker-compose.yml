@@ -16,11 +16,40 @@ services:
   frontend:
     image: konradkleine/docker-registry-frontend:v2
     restart: always
-    ports:
-      - 80:80
     environment:
       ENV_DOCKER_REGISTRY_HOST: dockerhub
       ENV_DOCKER_REGISTRY_PORT: 443
       ENV_DOCKER_REGISTRY_USE_SSL: 1
     depends_on:
       - dockerhub
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    environment:
+      TZ: Asia/Tokyo
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gitbucket
+      MYSQL_USER: gitbucket
+      MYSQL_PASSWORD: gitbucket
+#    volumes:
+#      - mysql-data:/var/lib/mysql
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+  gitbucket:
+    image: gitbucket/gitbucket
+    restart: always
+    environment:
+      GITBUCKET_DB_URL: jdbc:postgresql://db/gitbucket
+      GITBUCKET_DB_USER: x
+      GITBUCKET_DB_PASSWORD: x
+  httpd:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - 80:80
+    volumes:
+#      - ./volume/httpdconf/httpd.conf:/usr/local/apache2/conf/httpd.conf
+#      - ./volume/httpdconf/extra/proxy-html.conf:/usr/local/apache2/conf/extra/proxy-html.conf
+      - ./volume/httpdconf/conf.d/proxy-html.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - frontend
