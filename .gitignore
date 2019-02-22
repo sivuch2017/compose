@@ -14,6 +14,8 @@ redmine/redmine/vendor/cache/*
 !.gitkeep
 dockerhub/volume/registry/*
 !.gitkeep
+dockerhub/volume/plugins/*
+!.gitkeep
 eclipse/dev/vscode/*
 !.gitkeep
 eclipse/dev/work/*
