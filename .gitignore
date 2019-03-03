@@ -12,7 +12,11 @@ redmine/redmine/plugins/*
 !.gitkeep
 redmine/redmine/vendor/cache/*
 !.gitkeep
-dockerhub/volume/registry/*
+dockerhub/volume/registry/docker/*
+!.gitkeep
+dockerhub/volume/mariadb/*
+!.gitkeep
+dockerhub/volume/secrets/*
 !.gitkeep
 dockerhub/volume/plugins/*
 !.gitkeep

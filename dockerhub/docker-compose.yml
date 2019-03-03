@@ -1,84 +1,123 @@
-version: '3.5'
+version: "2"
+
 services:
-  dockerhub:
-    image: registry:2
-    restart: always
-    ports:
-      - 443:443
+  portus:
+    image: opensuse/portus:2.4.2
     environment:
-      REGISTRY_HTTP_ADDR: 0.0.0.0:443
-      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/dockerhub.crt
-      REGISTRY_HTTP_TLS_KEY: /certs/dockerhub.key
-      REGISTRY_STORAGE_DELETE_ENABLED: 'true'
+      - PORTUS_MACHINE_FQDN_VALUE=${MACHINE_FQDN}
+
+      # DB. The password for the database should definitely not be here. You are
+      # probably better off with Docker Swarm secrets.
+      - PORTUS_DB_HOST=db
+      - PORTUS_DB_DATABASE=portus_production
+      - PORTUS_DB_PASSWORD=${DATABASE_PASSWORD}
+      - PORTUS_DB_POOL=5
+
+      # Secrets. It can possibly be handled better with Swarm's secrets.
+      - PORTUS_SECRET_KEY_BASE=${SECRET_KEY_BASE}
+      - PORTUS_KEY_PATH=/certificates/portus.key
+      - PORTUS_PASSWORD=${PORTUS_PASSWORD}
+
+      # SSL
+      - PORTUS_PUMA_TLS_KEY=/certificates/portus.key
+      - PORTUS_PUMA_TLS_CERT=/certificates/portus.crt
+
+      # NGinx is serving the assets instead of Puma. If you want to change this,
+      # uncomment this line.
+      #- RAILS_SERVE_STATIC_FILES='true'
+    ports:
+      - 3000:3000
+    links:
+      - db
     volumes:
-      - ./volume/certs:/certs
+      - ./volume/secrets:/certificates:ro
+      - static:/srv/Portus/public
+#      - ./config.yml:/srv/Portus/config/config.yml
+
+  background:
+    image: opensuse/portus:2.4.2
+    depends_on:
+      - portus
+      - db
+    environment:
+      # Theoretically not needed, but cconfig's been buggy on this...
+      - CCONFIG_PREFIX=PORTUS
+      - PORTUS_MACHINE_FQDN_VALUE=${MACHINE_FQDN}
+
+      # DB. The password for the database should definitely not be here. You are
+      # probably better off with Docker Swarm secrets.
+      - PORTUS_DB_HOST=db
+      - PORTUS_DB_DATABASE=portus_production
+      - PORTUS_DB_PASSWORD=${DATABASE_PASSWORD}
+      - PORTUS_DB_POOL=5
+
+      # Secrets. It can possibly be handled better with Swarm's secrets.
+      - PORTUS_SECRET_KEY_BASE=${SECRET_KEY_BASE}
+      - PORTUS_KEY_PATH=/certificates/portus.key
+      - PORTUS_PASSWORD=${PORTUS_PASSWORD}
+
+      - PORTUS_BACKGROUND=true
+    links:
+      - db
+    volumes:
+      - ./volume/secrets:/certificates:ro
+
+  db:
+    image: library/mariadb:10.0.23
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --init-connect='SET NAMES UTF8;' --innodb-flush-log-at-trx-commit=0
+    environment:
+      - MYSQL_DATABASE=portus_production
+
+      # Again, the password shouldn't be handled like this.
+      - MYSQL_ROOT_PASSWORD=${DATABASE_PASSWORD}
+    volumes:
+      - ./volume/mariadb:/var/lib/mysql
+
+  registry:
+    image: library/registry:2.6
+    command: ["/bin/sh", "/etc/docker/registry/init"]
+    environment:
+      # Authentication
+      REGISTRY_AUTH_TOKEN_REALM: https://${MACHINE_FQDN}/v2/token
+      REGISTRY_AUTH_TOKEN_SERVICE: ${MACHINE_FQDN}
+      REGISTRY_AUTH_TOKEN_ISSUER: ${MACHINE_FQDN}
+      REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE: /secrets/portus.crt
+
+      # SSL
+      REGISTRY_HTTP_TLS_CERTIFICATE: /secrets/portus.crt
+      REGISTRY_HTTP_TLS_KEY: /secrets/portus.key
+
+      # Portus endpoint
+      REGISTRY_NOTIFICATIONS_ENDPOINTS: >
+        - name: portus
+          url: https://${MACHINE_FQDN}/v2/webhooks/events
+          timeout: 2000ms
+          threshold: 5
+          backoff: 1s
+    volumes:
       - ./volume/registry:/var/lib/registry
-  frontend:
-    image: sra00346/docker-registry-frontend:v2
-    build:
-      context: build/frontend
-      dockerfile: Dockerfile
+      - ./volume/secrets:/secrets:ro
+      - ./volume/registry/config.yml:/etc/docker/registry/config.yml:ro
+      - ./volume/registry/init:/etc/docker/registry/init:ro
+    ports:
+      - 5000:5000
+      - 5001:5001 # required to access debug service
+    links:
+      - portus:portus
+
+  nginx:
+    image: library/nginx:alpine
+    volumes:
+      - ./volume/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./volume/secrets:/secrets:ro
+      - static:/srv/Portus/public:ro
     ports:
       - 80:80
-    restart: always
-    environment:
-      ENV_DOCKER_REGISTRY_HOST: dockerhub
-      ENV_DOCKER_REGISTRY_PORT: 443
-      ENV_DOCKER_REGISTRY_USE_SSL: 1
-    depends_on:
-      - dockerhub
-  mysql:
-    image: mysql:5.7
-    restart: always
-    environment:
-      TZ: Asia/Tokyo
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: gitbucket
-      MYSQL_USER: gitbucket
-      MYSQL_PASSWORD: gitbucket
-    volumes:
-      - mysql-data:/var/lib/mysql
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
-  gitbucket:
-    image: f99aq8ove/gitbucket
-    restart: always
-    volumes:
-      - gitbucket:/gitbucket
-    environment:
-      GITBUCKET_DB_URL: jdbc:mysql://mysql/gitbucket?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
-      GITBUCKET_DB_USER: gitbucket
-      GITBUCKET_DB_PASSWORD: gitbucket
-      GITBUCKET_OPTS: --prefix=/gitbucket
-      GITBUCKET_EXTRA_DEPS: 'false'
-      JAVA_OPTS: -Xmx1g
-    expose:
-      - 8080
-      - 29418
-    depends_on:
-      - mysql
-  jenkins:
-    image: jenkins/jenkins:lts-alpine
-    restart: always
-    volumes:
-      - jenkinsdata:/var/jenkins_home
-      - ./volume/plugins:/var/jenkins_home/plugins
-    environment:
-      JENKINS_OPTS: --prefix=/jenkins
-      JAVA_OPTS: -Duser.timezone=Asia/Tokyo -Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8
-    expose:
-      - 8080
-      - 50000
-  mail:
-    image: jeanberu/mailcatcher
-    expose:
-      - 1025
-    ports:
-      - 1080:1080
-volumes:
-  gitbucket:
-    driver: local
-  mysql-data:
-    driver: local
-  jenkinsdata:
-    driver: local
+      - 443:443
+    links:
+      - registry:registry
+      - portus:portus
 
+volumes:
+  static:
+    driver: local
