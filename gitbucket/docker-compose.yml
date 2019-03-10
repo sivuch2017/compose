@@ -1,0 +1,37 @@
+version: '2'
+services:
+  mysql:
+    image: mysql:5.7
+    restart: always
+    environment:
+      TZ: Asia/Tokyo
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gitbucket
+      MYSQL_USER: gitbucket
+      MYSQL_PASSWORD: gitbucket
+    volumes:
+      - mysql-data:/var/lib/mysql
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+  gitbucket:
+    image: sivuch/gitbucket
+    restart: always
+    privileged: true
+    build: build
+    volumes:
+      - gitbucket:/gitbucket
+    environment:
+      GITBUCKET_DB_URL: jdbc:mysql://mysql/gitbucket?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
+      GITBUCKET_DB_USER: gitbucket
+      GITBUCKET_DB_PASSWORD: gitbucket
+      GITBUCKET_OPTS: --max_file_size=3145728 --prefix=/gitbucket
+      JAVA_OPTS: -Xmx1g
+      DOCKERIZE_OPTS: -timeout 60s -wait tcp://mysql:3306
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+volumes:
+  gitbucket:
+    driver: local
+  mysql-data:
+    driver: local
