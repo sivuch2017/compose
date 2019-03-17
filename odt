@@ -1,0 +1,38 @@
+http://officecdn.microsoft.com/pr/492350f6-3a01-4f97-b9c0-c7c6ddf67d60/Office/Data/v32_16.0.11328.20158.cab
+http://officecdn.microsoft.com/pr/492350f6-3a01-4f97-b9c0-c7c6ddf67d60/Office/Data/16.0.11328.20158/i320.cab
+http://officecdn.microsoft.com/pr/492350f6-3a01-4f97-b9c0-c7c6ddf67d60/Office/Data/16.0.11328.20158/i640.cab
+http://officecdn.microsoft.com/pr/492350f6-3a01-4f97-b9c0-c7c6ddf67d60/Office/Data/16.0.11328.20158/i321041.cab
+http://officecdn.microsoft.com/pr/492350f6-3a01-4f97-b9c0-c7c6ddf67d60/Office/Data/16.0.11328.20158/i641041.cab
+http://officecdn.microsoft.com/pr/492350f6-3a01-4f97-b9c0-c7c6ddf67d60/Office/Data/16.0.11328.20158/s320.cab
+http://officecdn.microsoft.com/pr/492350f6-3a01-4f97-b9c0-c7c6ddf67d60/Office/Data/16.0.11328.20158/s321041.cab
+http://officecdn.microsoft.com/pr/492350f6-3a01-4f97-b9c0-c7c6ddf67d60/Office/Data/16.0.11328.20158/stream.x86.ja-jp.dat
+http://officecdn.microsoft.com/pr/492350f6-3a01-4f97-b9c0-c7c6ddf67d60/Office/Data/16.0.11328.20158/stream.x86.x-none.dat
+
+.
+│  Configuration.xml
+│  setup.exe
+│
+└─Office
+    └─Data
+        │  v32_16.0.11328.20158.cab
+        │
+        └─16.0.11328.20158
+                i320.cab
+                i321041.cab
+                i640.cab
+                i641041.cab
+                s320.cab
+                s321041.cab
+                stream.x86.ja-jp.dat
+                stream.x86.x-none.dat
+
+<Configuration>
+  <Add OfficeClientEdition="32" Channel="Monthly" Version="16.0.11328.20158" ForceUpgrade="TRUE">
+    <Product ID="O365ProPlusRetail">
+      <Language ID="ja-jp" />
+    </Product>
+  </Add>
+  <Display Level="Full" AcceptEULA="TRUE" />
+  <Logging Level="Standard" Path=".\" />
+</Configuration>
+
