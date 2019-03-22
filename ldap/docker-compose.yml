@@ -5,7 +5,8 @@ services:
     image: osixia/openldap:latest
     restart: always
     environment:
-      LDAP_ORGANISATION: "dmaf"
+      LDAP_ORGANISATION: "org"
+      LDAP_DOMAIN: "domain"
 
   ldap-admin:
     image: osixia/phpldapadmin:latest
@@ -16,5 +17,4 @@ services:
     ports:
       - "80:80"
     volumes:
-#      - ./config.php:/container/service/phpldapadmin/assets/config/config.php
-      - ./config.php:/container/service/phpldapadmin/assets/config/config.php.my
+      - ./phpldapadmin:/var/www/phpldapadmin

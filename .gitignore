@@ -24,3 +24,5 @@ eclipse/dev/vscode/*
 !.gitkeep
 eclipse/dev/work/*
 !.gitkeep
+ldap/phpldapadmin/*
+!.gitkeep
