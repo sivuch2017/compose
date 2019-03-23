@@ -1,12 +1,18 @@
 version: '3'
 
 services:
+
   ldap-server:
     image: osixia/openldap:latest
     restart: always
     environment:
       LDAP_ORGANISATION: "org"
       LDAP_DOMAIN: "domain"
+    ports:
+      - "389:389"
+    volumes:
+      - lib-ldap:/var/lib/ldap
+      - ldap-slapd:/etc/ldap/slapd.d
 
   ldap-admin:
     image: osixia/phpldapadmin:latest
@@ -17,4 +23,15 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./phpldapadmin:/var/www/phpldapadmin
+      - phpldapadmin:/var/www/phpldapadmin
+
+volumes:
+
+  lib-ldap:
+    driver: local
+
+  ldap-slapd:
+    driver: local
+
+  phpldapadmin:
+    driver: local
