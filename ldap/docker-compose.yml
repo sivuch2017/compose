@@ -15,15 +15,20 @@ services:
       - ldap-slapd:/etc/ldap/slapd.d
 
   ldap-admin:
-    image: osixia/phpldapadmin:latest
+    image: sra00346/phpldapadmin:latest
+#    image: osixia/phpldapadmin:latest
     restart: always
+    build:
+      context: build
+      dockerfile: Dockerfile
     environment:
-      PHPLDAPADMIN_LDAP_HOSTS: "ldap-server"
-      PHPLDAPADMIN_HTTPS: "false"
+      PHPLDAPADMIN_LDAP_HOST: "ldap-server"
+#      PHPLDAPADMIN_LDAP_HOSTS: "ldap-server"
+#      PHPLDAPADMIN_HTTPS: "false"
     ports:
       - "80:80"
-    volumes:
-      - phpldapadmin:/var/www/phpldapadmin
+#    volumes:
+#      - phpldapadmin:/var/www/phpldapadmin
 
 volumes:
 
@@ -33,5 +38,5 @@ volumes:
   ldap-slapd:
     driver: local
 
-  phpldapadmin:
-    driver: local
+#  phpldapadmin:
+#    driver: local
