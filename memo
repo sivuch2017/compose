@@ -36,3 +36,17 @@ http://officecdn.microsoft.com/pr/492350f6-3a01-4f97-b9c0-c7c6ddf67d60/Office/Da
   <Logging Level="Standard" Path=".\" />
 </Configuration>
 
+sar
+http://naoberry.com/tech/sar/
+https://miyakawataku.hatenablog.com/entry/20140202/1391330618
+
+make
+http://urin.github.io/posts/2013/simple-makefile-for-clang
+http://objectclub.jp/community/memorial/homepage3.nifty.com/masarl/article/gnu-make/rule.html
+
+rhel8repo
+https://downloads.redhat.com/redhat/rhel/rhel-8-beta/rhel-8-beta.repo
+
+csh
+-f
+
