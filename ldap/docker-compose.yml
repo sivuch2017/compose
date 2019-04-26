@@ -19,7 +19,7 @@ services:
 #    image: osixia/phpldapadmin:latest
     restart: always
     build:
-      context: build
+      context: build/phpldapadmin
       dockerfile: Dockerfile
     environment:
       PHPLDAPADMIN_LDAP_HOST: "ldap-server"
@@ -29,6 +29,15 @@ services:
       - "80:80"
 #    volumes:
 #      - phpldapadmin:/var/www/phpldapadmin
+
+  usermin:
+    image: sra00346/usermin:latest
+    restart: always
+    build:
+      context: build/usermin
+      dockerfile: Dockerfile
+    ports:
+      - "20000:20000"
 
 volumes:
 
