@@ -16,7 +16,7 @@ RUN rm /etc/apt/apt.conf.d/docker-gzip-indexes && \
        libnss-ldap \
        libpam-ldap \
        ldap-utils && \
-    curl -L -O http://www.webmin.com/download/deb/usermin-current.deb && \
+    curl -k -L -O http://www.webmin.com/download/deb/usermin-current.deb && \
     dpkg -i usermin-current.deb && \
     rm usermin-current.deb && \
     rm -rf /var/lib/apt/lists/* && \
@@ -49,7 +49,7 @@ RUN rm /etc/apt/apt.conf.d/docker-gzip-indexes && \
     } | tee -a /etc/auth-client-config/profile.d/ldap-auth-config && \
     sed -i \
        -e 's/base dc=example,dc=net/base dc=domain/' \
-       -e 's#uri ldapi:///#uri ldap://192.168.10.1/#' \
+       -e 's#uri ldapi:///#uri ldap://ldap-server/#' \
        -e 's/#binddn cn=proxyuser,dc=padl,dc=com/binddn cn=admin,dc=domain/' \
        -e 's/#bindpw secret/bindpw admin/' \
        -e 's/rootbinddn cn=manager,dc=example,dc=net/#rootbinddn cn=manager,dc=example,dc=net/' \
