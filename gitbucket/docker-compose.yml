@@ -20,7 +20,7 @@ services:
     restart: always
     privileged: true
     build:
-      context: build
+      context: build/gitbucket
       dockerfile: Dockerfile
     volumes:
       - gitbucket:/gitbucket
@@ -36,6 +36,15 @@ services:
       - "8080:8080"
     depends_on:
       - mysql
+
+  fess:
+    image: sivuch/fess
+    restart: always
+    build:
+      context: build/fess
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
 
 volumes:
 
