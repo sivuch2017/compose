@@ -1,0 +1,12 @@
+{
+  "name": "FreeTDS",
+  "fs_paths": [
+    {
+      "name": "freetds",
+      "path": "/repository/freetds",
+      "metadata": {
+        "url-pattern": "https://github.com/{name}/blob/HEAD/{path}#L{lno}"
+      }
+    }
+  ]
+}

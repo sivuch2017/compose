@@ -28,7 +28,7 @@ services:
     volumes:
       - ./vol/gitbucket:/gitbucket:rw
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
       - mysql
     environment:
