@@ -1,14 +1,12 @@
-version: "2"
+version: "2.1"
 services:
   raneto:
     image: linuxserver/raneto
-#    container_name: raneto
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=$PUID
+      - PGID=$PFID
       - TZ=Asia/Tokyo
     volumes:
-      - ./appdata:/config
+      - ./vol:/config
     ports:
-      - 3000:3000
-#    restart: unless-stopped
+      - $PORT:3000
