@@ -4,7 +4,7 @@ services:
     image: linuxserver/raneto
     environment:
       - PUID=$PUID
-      - PGID=$PFID
+      - PGID=$PGID
       - TZ=Asia/Tokyo
     volumes:
       - ./vol:/config
