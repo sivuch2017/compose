@@ -1,0 +1,49 @@
+version: '3.5'
+
+services:
+
+  mysql:
+    image: sivuch/mysql:8.0
+    build:
+      context: build/mysql
+      dockerfile: Dockerfile
+      args:
+        MYSQL_UID: $MYSQL_UID
+        MYSQL_GID: $MYSQL_GID
+    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_bin, --default-authentication-plugin=mysql_native_password]
+    volumes:
+      - ./vol/var/lib/mysql:/var/lib/mysql:rw
+    user: root
+    stop_grace_period: 1m
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      TZ: Asia/Tokyo
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gitbucket
+      MYSQL_USER: gitbucket
+      MYSQL_PASSWORD: gitbucket
+
+  gitbucket:
+    image: sivuch/gitbucket
+    build:
+      context: build/gitbucket
+      dockerfile: Dockerfile
+      args:
+        GITBUCKET_UID: $GITBUCKET_UID
+        GITBUCKET_GID: $GITBUCKET_GID
+    restart: always
+    privileged: true
+    volumes:
+      - ./vol/gitbucket:/gitbucket:rw
+    ports:
+      - "$GITBUCKET_PORT:8080"
+    depends_on:
+      - mysql
+    environment:
+      - TZ=Asia/Tokyo
+      - GITBUCKET_DB_URL=jdbc:mysql://mysql/gitbucket?useUnicode=true&characterEncoding=utf8
+      - GITBUCKET_DB_USER=gitbucket
+      - GITBUCKET_DB_PASSWORD=gitbucket
+      - GITBUCKET_OPTS=--max_file_size=3145728 --prefix=/gitbucket
+      - DOCKERIZE_OPTS=-timeout 60s -wait tcp://mysql:3306

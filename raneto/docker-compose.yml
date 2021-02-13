@@ -1,0 +1,12 @@
+version: "2.1"
+services:
+  raneto:
+    image: linuxserver/raneto
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=Asia/Tokyo
+    volumes:
+      - ./vol:/config
+    ports:
+      - $PORT:3000

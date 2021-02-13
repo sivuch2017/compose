@@ -1,0 +1,4 @@
+vol/var/lib/mysql/*
+!.gitkeep
+vol/gitbucket/*
+!.gitkeep
